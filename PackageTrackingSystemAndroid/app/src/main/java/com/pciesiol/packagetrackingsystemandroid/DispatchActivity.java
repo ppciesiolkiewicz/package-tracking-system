@@ -1,13 +1,26 @@
 package com.pciesiol.packagetrackingsystemandroid;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.view.Window;
 
-public class DispatchActivity extends ActionBarActivity {
+import com.pciesiol.packagetrackingsystemandroid.database.DatabaseConnector;
+
+public class DispatchActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dispatch);
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        DatabaseConnector db = new DatabaseConnector();
+
+        if (db.isUserLogged()) {
+            startActivity(new Intent(this, MainActivity.class));
+        } else {
+            startActivity(new Intent(this, LoginActivity.class));
+        }
     }
+
 }
