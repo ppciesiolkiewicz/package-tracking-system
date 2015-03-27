@@ -33,6 +33,10 @@
             android:name=".MyStatusActivity"
             android:label="@string/title_activity_my_status" >
         </activity>
+        <activity
+            android:name=".PackageDetailsActivity"
+            android:label="@string/title_activity_package_details" >
+        </activity>
     </application>
 
 </manifest>
