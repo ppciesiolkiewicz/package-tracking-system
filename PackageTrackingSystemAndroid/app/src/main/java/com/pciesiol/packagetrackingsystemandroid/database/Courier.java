@@ -8,10 +8,10 @@ import java.util.List;
 public class Courier extends ParseUser {
 
     public List<Package> getPackages() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     public List<String> getPackagesIds() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

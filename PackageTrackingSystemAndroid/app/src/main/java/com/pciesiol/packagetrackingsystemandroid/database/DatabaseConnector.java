@@ -36,19 +36,21 @@ public class DatabaseConnector {
     operation will remove it from his list
      */
     public void assignPackage(String code) {
-
+        throw new UnsupportedOperationException();
     }
 
 
     public void dropPackage(String code) {
-
+        throw new UnsupportedOperationException();
     }
 
     public List<Package> getMyPackages() {
-        return null;
+        Courier c = (Courier) ParseUser.getCurrentUser();
+        return c.getPackages();
     }
 
     public List<String> getMyPackagesIds() {
-        return null;
+        Courier c = (Courier) ParseUser.getCurrentUser();
+        return c.getPackagesIds();
     }
 }
