@@ -9,8 +9,11 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
-@ParseClassName("User")
+@ParseClassName("_User")
 public class Courier extends ParseUser {
+
+    public Courier() {}
+
 
     public List<String> getPackagesIds() {
         JSONArray jArray = this.getJSONArray("packages");
@@ -25,5 +28,10 @@ public class Courier extends ParseUser {
             }
         }
         return packages;
+    }
+
+
+    public static Courier getCurrentCourier() {
+        return (Courier) ParseUser.getCurrentUser();
     }
 }

@@ -10,7 +10,7 @@ public class Package extends ParseObject {
     private String descriptionKey = "description";
     private String weightKey = "weight";
 
-
+    public Package() {}
 
     public String getDescription() {
         return this.getString(descriptionKey);
