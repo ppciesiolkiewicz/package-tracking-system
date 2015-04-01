@@ -23,4 +23,8 @@ public class Package extends ParseObject {
     public static ParseQuery<Package> getQuery() {
         return ParseQuery.getQuery(Package.class);
     }
+
+    public String toString() {
+        return getObjectId()+": "+getString(descriptionKey)+" "+getInt(weightKey);
+    }
 }
