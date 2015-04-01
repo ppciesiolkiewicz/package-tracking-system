@@ -16,7 +16,6 @@ import android.widget.Toast;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
-import com.pciesiol.packagetrackingsystemandroid.database.DatabaseConnector;
 
 public class LoginActivity extends Activity {
     private EditText usernameEditText;
@@ -54,7 +53,6 @@ public class LoginActivity extends Activity {
 
 
     private void login() {
-        DatabaseConnector db = new DatabaseConnector();
         String username = usernameEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
 
@@ -67,7 +65,7 @@ public class LoginActivity extends Activity {
         dialog.show();
 
 
-        db.login(username, password, new LogInCallback() {
+        ParseUser.logInInBackground(username, password, new LogInCallback() {
             @Override
             public void done(ParseUser user, ParseException e) {
                 dialog.dismiss();
