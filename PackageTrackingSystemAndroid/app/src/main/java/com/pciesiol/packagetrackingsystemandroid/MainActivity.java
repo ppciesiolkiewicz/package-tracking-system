@@ -41,11 +41,6 @@ public class MainActivity extends Activity {
             }
         });
 
-        Courier user =  Courier.getCurrentCourier();
-        for(String s : user.getPackagesIds())
-            System.out.println(s);
-
-
         scanButton = (Button) findViewById(R.id.button_scan);
         scanButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
