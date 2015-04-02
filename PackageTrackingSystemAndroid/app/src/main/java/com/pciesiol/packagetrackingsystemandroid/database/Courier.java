@@ -1,7 +1,6 @@
 package com.pciesiol.packagetrackingsystemandroid.database;
 
 import com.parse.ParseClassName;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 @ParseClassName("_User")
@@ -13,10 +12,5 @@ public class Courier extends ParseUser {
         return (Courier) ParseUser.getCurrentUser();
     }
 
-    public ParseQuery<Package> getCourierPackagesQuery() {
-        ParseQuery<Package> query = ParseQuery.getQuery("Package");
-        query.whereEqualTo("courierId", this.getObjectId());
-
-        return query;
-    }
+    public String getCourierId() { return this.getObjectId(); }
 }
