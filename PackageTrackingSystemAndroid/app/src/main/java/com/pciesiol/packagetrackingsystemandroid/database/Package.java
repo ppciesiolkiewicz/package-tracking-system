@@ -27,11 +27,18 @@ public class Package extends ParseObject implements Serializable {
 
     public String getCourierId() { return this.getString(courierId); }
 
+    public String toString() {
+        return getObjectId()+": "+getString(descriptionKey);
+    }
+
     public static ParseQuery<Package> getQuery() {
         return ParseQuery.getQuery(Package.class);
     }
 
-    public String toString() {
-        return getObjectId()+": "+getString(descriptionKey);
+    public static ParseQuery<Package> getCourierPackagesQuery(String courierId) {
+        ParseQuery<Package> query = ParseQuery.getQuery("Package");
+        query.whereEqualTo("courierId", courierId);
+
+        return query;
     }
 }
