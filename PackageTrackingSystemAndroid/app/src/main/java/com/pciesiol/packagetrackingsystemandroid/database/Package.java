@@ -11,7 +11,7 @@ public class Package extends ParseObject implements Serializable {
 
     private String descriptionKey = "description";
     private String weightKey = "weight";
-    private String courierId = "courierId";
+    private String courierIdKey = "courierId";
 
     public Package() {}
 
@@ -25,7 +25,7 @@ public class Package extends ParseObject implements Serializable {
 
     public String getPackageId() { return this.getObjectId(); }
 
-    public String getCourierId() { return this.getString(courierId); }
+    public String getCourierId() { return this.getString(courierIdKey); }
 
     public String toString() {
         return getObjectId()+": "+getString(descriptionKey);
@@ -40,5 +40,15 @@ public class Package extends ParseObject implements Serializable {
         query.whereEqualTo("courierId", courierId);
 
         return query;
+    }
+
+    public void leavePackage() {
+        this.put(courierIdKey, "?");
+        this.saveInBackground();
+    }
+
+    public void assignToNewCourier(String courierId) {
+        this.put(courierIdKey, courierId);
+        this.saveInBackground();
     }
 }
