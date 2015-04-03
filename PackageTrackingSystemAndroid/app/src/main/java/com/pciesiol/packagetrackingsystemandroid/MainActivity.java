@@ -15,11 +15,8 @@ import android.widget.Toast;
 
 import com.parse.GetCallback;
 import com.parse.ParseException;
-import com.parse.ParseUser;
 import com.pciesiol.packagetrackingsystemandroid.database.Courier;
 import com.pciesiol.packagetrackingsystemandroid.database.Package;
-
-import java.util.List;
 
 public class MainActivity extends Activity {
     private Button accountInfoButton;
@@ -88,21 +85,21 @@ public class MainActivity extends Activity {
         dialog.setMessage(getString(R.string.progress_checking_the_code));
         dialog.show();
 
-
         Package.getQuery().getInBackground(packageCode, new GetCallback<Package>() {
             public void done(Package pkg, ParseException e) {
                 dialog.dismiss();
-                if (e == null) {
+                if (e == null) { //no error
                     Toast toast;
-                    if(doIHaveThatPackage()) {
+                    if(doIHaveThatPackage(pkg)) {
+                        pkg.leavePackage();
                         toast = Toast.makeText(getApplicationContext(),
                                 getResources().getString(R.string.you_dropped_the_package), Toast.LENGTH_SHORT);
                     }
                     else {
+                        pkg.assignToNewCourier(Courier.getCurrentCourier().getCourierId());
                         toast = Toast.makeText(getApplicationContext(),
                                 getResources().getString(R.string.you_get_the_package), Toast.LENGTH_SHORT);
                     }
-                    updateMyPackages();
                     toast.show();
                 } else {
                     showDialog(getResources().getString(R.string.invalid_package_code));
@@ -111,18 +108,10 @@ public class MainActivity extends Activity {
         });
     }
 
-    private boolean doIHaveThatPackage() {
-         //TODO
-        return true;
+    private boolean doIHaveThatPackage(Package pkg) {
+         String packageOwnerId = pkg.getCourierId();
+         return packageOwnerId != null ? Courier.getCurrentCourier().getCourierId().equals(packageOwnerId) : false;
     }
-
-    private void updateMyPackages() {
-        //TODO
-        List<String> list =  ParseUser.getCurrentUser().getList("packages");
-        for( String l : list )
-            System.out.println(l);
-    }
-
 
     private void showDialog(String msg) {
         AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
