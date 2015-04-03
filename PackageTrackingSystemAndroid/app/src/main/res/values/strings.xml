@@ -28,6 +28,6 @@
     <string name="progress_checking_the_code">Checking the code</string>
     <string name="msg_no_scan_data">Code wasn\'t scanned properly!</string>
     <string name="you_get_the_package">Package was assigned to You</string>
-    <string name="you_dropped_the_package">This package is already assigned to You</string>
+    <string name="you_dropped_the_package">Package isn\'t assigned to You now</string>
     <string name="invalid_package_code">Invalid package code - try again!</string>
 </resources>
