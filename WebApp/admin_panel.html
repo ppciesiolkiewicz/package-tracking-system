@@ -1,0 +1,127 @@
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+
+  <title>Package Tracking System - Admin Panel</title>
+  <meta name="description" content="Package Tracking System - Admin Panel">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script type="text/javascript" src="http://www.parsecdn.com/js/parse-1.3.5.min.js"></script>
+  <script type="text/javascript" src="js/qrcode.min.js"></script>
+  <script type="text/javascript" src="js/html2canvas.min.js"></script>
+  <script type="text/javascript" src="js/jquery.plugin.html2canvas.js"></script>
+
+  <script type="text/javascript">
+  var PackageRecord = Parse.Object.extend("Package");
+
+  $(document).ready(function() {
+      Parse.initialize("bmG19cavkmrKijMUhOyOCddniVeIZxAvvtIy8nmj", "j1a9QRI3eswuCP3kvN1mCQFSptIgwwD9oZqqVtgg");
+      $("#addToDbBtn").on("click", addPackageToDatabase);
+      $("#generateQrBtn").on("click", makeCode);
+      $("#exportImgBtn").on("click", exportImg);
+      $("#clearCodesBtn").on("click", clearCodes);
+  });
+
+  function addPackageToDatabase() {
+      pkgDesc = $("#pkgDescription").val();
+      pkgWeight = parseInt($("#pkgWeight").val());
+      $("#success").hide();
+      $("#error").hide();
+      pkg = new PackageRecord();
+      pkg.set("description", pkgDesc);
+      pkg.set("weight", pkgWeight);
+
+      pkg.save(null, {
+          success: function(pkg) {
+               $('#pkgId').append(pkg.id+"\n");
+               $("#success").show();
+           },
+           error: function(pkg, error) {
+               $("#error").show();
+               alert('Failed to create new object, with error code: ' + error.message);
+           }
+      });
+  }
+
+  function makeCode () {
+      var elText = $("#pkgId");
+      var codesDiv = $("#qrCodes");
+
+      if (!elText.val()) {
+          alert("Input a text");
+          elText.focus();
+          return;
+      }
+
+      var vals = elText.val().trim().split("\n");
+      for( i in vals ) {
+        codeVal = vals[i];
+        console.log("generating QR code for" + codeVal);
+
+        var qrPlaceholder = document.createElement("div");
+        qrPlaceholder.id = codeVal;
+        qrPlaceholder.className = "qrCode"; //add class (margin, display inline-block
+        $(codesDiv).append(qrPlaceholder); //add div which will hold newly created qrCode img
+
+        var qrcode = new QRCode(qrPlaceholder, {
+            width : 100,
+            height : 100,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
+
+        qrcode.makeCode(codeVal);
+      }
+      $(elText).empty();
+  }
+
+  function exportImg() {
+      $('#qrCodes').html2canvas({
+          onrendered: function (canvas) {
+            var img = canvas.toDataURL();
+            window.open(img, "_blank");
+          }
+      });
+  }
+
+  function clearCodes() {
+      $('#qrCodes').empty();
+  }
+
+  </script>
+</head>
+
+<body>
+  <div id="main">
+    <h1>Package Tracking System - Admin Panel!</h1>
+
+    <p>Here you can add packages to the database and generate QR codes for them.</p>
+
+    <div>
+      <input class="form-control" placeholder="Package description" id="pkgDescription"></input>
+      <input class="form-control" placeholder="Package weight in grams" id="pkgWeight"></input>
+    </div>
+    <div>
+      <button type="button" class="btn btn-default" id="addToDbBtn">Add to database</button>
+      <button type="button" class="btn btn-default" id="generateQrBtn">Generate QR codes</button>
+      <button type="button" class="btn btn-default" id="exportImgBtn">Export img</button>
+      <button type="button" class="btn btn-default" id="clearCodesBtn">Clear codes</button>
+    </div>
+
+    <div id="success" style="display:none" class="alert alert-success">Success</div>
+    <div id="error" style="display:none" class="alert alert-danger">Error</div>
+
+    <textarea id="pkgId" rows="5" cols="50"></textarea>
+  </div>
+  <div id="qrCodes"></div>
+
+</body>
+
+</html>
+

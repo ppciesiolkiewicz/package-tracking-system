@@ -1,0 +1,38 @@
+body {
+    background: #eee;
+    text-align: center;
+    padding: 0 25px;
+}
+
+#main {
+    width: 85%;
+    margin: auto;
+    text-align: left;
+    background: white;
+    padding: 50px 60px;
+    border: solid #ddd;
+    border-width: 0 1px 1px 1px;
+}
+
+#main h1 {
+    margin-top: 0;
+    font-size: 35px;
+}
+
+#main ul {
+    padding-left: 20px;
+}
+
+div {
+    margin: 15px 0 15px 0;
+}
+
+
+.qrCode {
+    margin: 10px 10px 10px 10px;
+    display: inline-block;
+}
+
+#qrCodes {
+   width: 20cm; //for A4 printing
+}
