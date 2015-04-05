@@ -28,8 +28,17 @@
   });
 
   function addPackageToDatabase() {
+      pkgDestAddress = $("#pkgDestAddress").val();
+      pkgDestCity = $("#pkgDestCity").val();
+      pkgDestZipCode = $("#pkgDestZipCode").val();
+
+      pkgSenderEmail = $("#pkgSenderEmail").val();
+      pkgSenderName = $("#pkgSenderName").val();
+      pkgSenderSurname = $("#pkgSenderSurname").val();
+
       pkgDesc = $("#pkgDescription").val();
       pkgWeight = parseInt($("#pkgWeight").val());
+
       $("#success").hide();
       $("#error").hide();
       pkg = new PackageRecord();
@@ -49,16 +58,15 @@
   }
 
   function makeCode () {
-      var elText = $("#pkgId");
+      var pkgIds = $("#pkgId");
       var codesDiv = $("#qrCodes");
 
-      if (!elText.val()) {
-          alert("Input a text");
-          elText.focus();
+      if (!pkgIds.val()) {
+          alert("Add packages to db");
           return;
       }
 
-      var vals = elText.val().trim().split("\n");
+      var vals = pkgIds.val().trim().split("\n");
       for( i in vals ) {
         codeVal = vals[i];
         console.log("generating QR code for" + codeVal);
@@ -78,7 +86,7 @@
 
         qrcode.makeCode(codeVal);
       }
-      $(elText).empty();
+      $(pkgIds).empty();
   }
 
   function exportImg() {
@@ -104,6 +112,14 @@
     <p>Here you can add packages to the database and generate QR codes for them.</p>
 
     <div>
+      <input class="form-control" placeholder="Destination address" id="pkgDestAddress"></input>
+      <input class="form-control" placeholder="Destination city" id="pkgDestCity"></input>
+      <input class="form-control" placeholder="Zip code" id="pkgDestZipCode"></input>
+      <br />
+      <input class="form-control" placeholder="Sender e-mail" id="pkgSenderEmail"></input>
+      <input class="form-control" placeholder="Sender name" id="pkgSenderName"></input>
+      <input class="form-control" placeholder="Sender surname" id="pkgSenderSurname"></input>
+      <br />
       <input class="form-control" placeholder="Package description" id="pkgDescription"></input>
       <input class="form-control" placeholder="Package weight in grams" id="pkgWeight"></input>
     </div>
