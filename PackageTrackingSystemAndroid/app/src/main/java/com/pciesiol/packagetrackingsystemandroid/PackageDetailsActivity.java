@@ -1,12 +1,12 @@
 package com.pciesiol.packagetrackingsystemandroid;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
+
 import com.pciesiol.packagetrackingsystemandroid.database.Package;
 
-public class PackageDetailsActivity extends Activity {
+public class PackageDetailsActivity extends UpdatingCourierPositionActivity {
 
     private TextView packageIdTextView;
     private TextView packageDescriptionTextView;

@@ -2,7 +2,6 @@ package com.pciesiol.packagetrackingsystemandroid;
 
 import android.IntentIntegrator;
 import android.IntentResult;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -18,7 +17,7 @@ import com.parse.ParseException;
 import com.pciesiol.packagetrackingsystemandroid.database.Courier;
 import com.pciesiol.packagetrackingsystemandroid.database.Package;
 
-public class MainActivity extends Activity {
+public class MainActivity extends UpdatingCourierPositionActivity {
     private Button accountInfoButton;
     private Button scanButton;
     private Button logoutButton;

@@ -1,6 +1,5 @@
 package com.pciesiol.packagetrackingsystemandroid;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -15,7 +14,7 @@ import com.pciesiol.packagetrackingsystemandroid.database.Package;
 
 import java.util.List;
 
-public class MyStatusActivity extends Activity {
+public class MyStatusActivity extends UpdatingCourierPositionActivity {
     private List<Package> packages;
     private ListView packagesListView;
     private ArrayAdapter<Package> packagesAdapter;
