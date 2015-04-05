@@ -1,0 +1,123 @@
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+
+  <title>Package Tracking System - User Panel</title>
+  <meta name="description" content="Package Tracking System - Admin Panel">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+  <style>
+   #map-canvas {
+      height: 500px;
+      width: 100%;
+      margin: 0px;
+      padding: 0px
+    }
+  </style>
+
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+  <script type="text/javascript" src="http://www.parsecdn.com/js/parse-1.3.5.min.js"></script>
+
+
+  <script type="text/javascript">
+  var PackageRecord = Parse.Object.extend("Package");
+  var CourierRecord = Parse.Object.extend("_User");
+  var map;
+  var packageMarker;
+
+  $(document).ready(function() {
+      Parse.initialize("bmG19cavkmrKijMUhOyOCddniVeIZxAvvtIy8nmj", "j1a9QRI3eswuCP3kvN1mCQFSptIgwwD9oZqqVtgg");
+      $("#searchPkgBtn").on("click", searchPackage);
+      initializeMap();
+  });
+
+  function initializeMap() {
+    var mapOptions = {
+      zoom: 3,
+      center: new google.maps.LatLng(30.0, 0.0)
+    };
+    map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+  }
+
+  function searchPackage() {
+     var pkgCode = $("#pkgCode");
+
+     if (!pkgCode.val()) {
+         alert("Input the package code");
+         pkgCode.focus();
+         return;
+     }
+
+     var query = new Parse.Query(PackageRecord);
+     query.equalTo("objectId", $(pkgCode).val());
+     query.first({
+       success: function(result) {
+           var courierId = result.get("courierId");
+           console.log("Courier id: "+courierId);
+
+           if(!courierId) {
+               alert("Package hasn't been assigned to any courier yet!");
+               return;
+           }
+
+           var query = new Parse.Query(CourierRecord);
+           query.equalTo("objectId", courierId);
+           query.first({
+             success: function(courier) {
+                 var courierPos = courier.get('position');
+                 console.log("Position : "+courierPos._latitude+" "+courierPos._longitude);
+                 setPackageMarker(courierPos._latitude, courierPos._longitude);
+             },
+             error: function(error) {
+               alert("Error: " + error.code + " " + error.message);
+             }
+           });
+
+       },
+       error: function(error) {
+         alert("Error: " + error.code + " " + error.message);
+       }
+     });
+  }
+
+  function setPackageMarker(latitude, longitude) {
+    if(packageMarker) //only 1 marker on the map
+        packageMarker.setMap(null);
+
+    var packagePosition = new google.maps.LatLng(latitude, longitude);
+    packageMarker = new google.maps.Marker({
+        position: packagePosition,
+        map: map,
+        title: "Here's Your package"
+    });
+
+    map.setCenter(packagePosition);
+    map.setZoom(15);
+  }
+  </script>
+</head>
+
+<body>
+  <div id="main">
+    <h1>Package Tracking System - User Panel!</h1>
+
+    <p>Here you can check, where actually is Your package.</p>
+
+    <div style="width: 40%;" class="input-group">
+      <input class="form-control" placeholder="Package code" id="pkgCode"></input>
+      <span class="input-group-btn">
+        <button class="btn btn-default" id="searchPkgBtn" type="button">Go!</button>
+      </span>
+    </div>
+
+    <div id="map-canvas"></div>
+  </div>
+</body>
+
+</html>
+
