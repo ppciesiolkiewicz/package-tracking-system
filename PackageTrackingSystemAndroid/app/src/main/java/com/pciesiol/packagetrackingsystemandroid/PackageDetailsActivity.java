@@ -1,39 +1,38 @@
 package com.pciesiol.packagetrackingsystemandroid;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.pciesiol.packagetrackingsystemandroid.database.Package;
 
+import java.util.Map;
+
 public class PackageDetailsActivity extends UpdatingCourierPositionActivity {
-
-    private TextView packageIdTextView;
-    private TextView packageDescriptionTextView;
-    private TextView packageWeightTextView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_package_details);
-
-        Intent intent = getIntent();
-        Bundle bundle=intent.getExtras();
-        //Package pkg = (Package) intent.getSerializableExtra("package");
-        Package pkg = (Package) bundle.getSerializable("package");
         initFields();
-        setPackageInfo(pkg);
     }
 
     private void initFields() {
-        this.packageIdTextView = (TextView) findViewById(R.id.packageIdTextView);
-        this.packageDescriptionTextView = (TextView) findViewById(R.id.packageDescriptionTextView);
-        this.packageWeightTextView = (TextView) findViewById(R.id.packageWeightTextView);
-    }
+        LinearLayout ll = new LinearLayout(this);
+        ll.setOrientation(LinearLayout.VERTICAL);
+        Package pkg = MyStatusActivity.selectedPackage;
+        for (Map.Entry<String, String> entry : pkg.getPackageInfo().entrySet())
+        {
+            TextView desc = new TextView(this);
+            desc.setText(entry.getKey());
+            desc.setTextSize(12);
 
-    public void setPackageInfo(Package packageInfo) {
-        this.packageIdTextView.setText(packageInfo.getPackageId() == null ? packageInfo.getPackageId() : "nima");
-        this.packageDescriptionTextView.setText(packageInfo.getDescription() == null ? packageInfo.getDescription() : "nima");
-        this.packageWeightTextView.setText(packageInfo.getWeight() == null ? Integer.toString(packageInfo.getWeight()) : "nima");
+            TextView val = new TextView(this);
+            val.setText(entry.getValue());
+            val.setTextSize(12);
+
+            ll.addView(desc);
+            ll.addView(val);
+        }
+
+        setContentView(ll);
     }
 }

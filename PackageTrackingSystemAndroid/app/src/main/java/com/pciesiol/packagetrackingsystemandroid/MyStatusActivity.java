@@ -20,6 +20,8 @@ public class MyStatusActivity extends UpdatingCourierPositionActivity {
     private ArrayAdapter<Package> packagesAdapter;
     private MyStatusActivity self; //this
 
+    public static Package selectedPackage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,12 +42,8 @@ public class MyStatusActivity extends UpdatingCourierPositionActivity {
         packagesListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Package pkg = packagesAdapter.getItem(position);
+                selectedPackage = packagesAdapter.getItem(position);
                 Intent intent = new Intent(MyStatusActivity.this,PackageDetailsActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("package", pkg);
-                //intent.putExtra("package", pkg);
-                intent.putExtras(bundle);
                 startActivity(intent);
             }
         });

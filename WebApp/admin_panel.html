@@ -10,6 +10,12 @@
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 
+  <style>
+    .pkgInfo {
+        margin: 0;
+    }
+  </style>
+
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
   <script type="text/javascript" src="http://www.parsecdn.com/js/parse-1.3.5.min.js"></script>
   <script type="text/javascript" src="js/qrcode.min.js"></script>
@@ -22,33 +28,62 @@
   $(document).ready(function() {
       Parse.initialize("bmG19cavkmrKijMUhOyOCddniVeIZxAvvtIy8nmj", "j1a9QRI3eswuCP3kvN1mCQFSptIgwwD9oZqqVtgg");
       $("#addToDbBtn").on("click", addPackageToDatabase);
-      $("#generateQrBtn").on("click", makeCode);
       $("#exportImgBtn").on("click", exportImg);
       $("#clearCodesBtn").on("click", clearCodes);
   });
 
   function addPackageToDatabase() {
+      $("#success").hide();
+      $("#error").hide();
+
+      if(!checkFields()) {
+        return;
+      }
+
+      //Package attribtues
+      //TODO: map <field_name_in_db, input_name> will be better...
       pkgDestAddress = $("#pkgDestAddress").val();
       pkgDestCity = $("#pkgDestCity").val();
       pkgDestZipCode = $("#pkgDestZipCode").val();
 
-      pkgSenderEmail = $("#pkgSenderEmail").val();
+      pkgReceiverName = $("#pkgReceiverName").val();
+      pkgReceiverSurname = $("#pkgReceiverSurname").val();
+      pkgReceiverEmail = $("#pkgReceiverEmail").val();
+      pkgReceiverPhoneNumber = $("#pkgReceiverPhoneNumber").val();
+
       pkgSenderName = $("#pkgSenderName").val();
       pkgSenderSurname = $("#pkgSenderSurname").val();
+      pkgSenderEmail = $("#pkgSenderEmail").val();
+      pkgSenderPhoneNumber = $("#pkgSenderPhoneNumber").val();
+
 
       pkgDesc = $("#pkgDescription").val();
       pkgWeight = parseInt($("#pkgWeight").val());
 
-      $("#success").hide();
-      $("#error").hide();
       pkg = new PackageRecord();
+      pkg.set("destinationAddress", pkgDestAddress);
+      pkg.set("destinationCity", pkgDestCity);
+      pkg.set("destinationZipCode", pkgDestZipCode);
+
+      pkg.set("receiverName", pkgReceiverName);
+      pkg.set("receiverSurname", pkgReceiverSurname);
+      pkg.set("receiverEmail", pkgReceiverEmail);
+      pkg.set("receiverPhoneNumber", pkgReceiverPhoneNumber);
+
+
+      pkg.set("senderName", pkgSenderName);
+      pkg.set("senderSurname", pkgSenderSurname);
+      pkg.set("senderEmail", pkgSenderEmail);
+      pkg.set("senderPhoneNumber", pkgSenderPhoneNumber);
+
       pkg.set("description", pkgDesc);
       pkg.set("weight", pkgWeight);
+      //Package attribtues end
 
       pkg.save(null, {
           success: function(pkg) {
-               $('#pkgId').append(pkg.id+"\n");
                $("#success").show();
+               makeCode(pkg.id, pkgDestAddress, pkgDestCity, pkgDestZipCode, pkgReceiverName, pkgReceiverSurname, pkgReceiverPhoneNumber);
            },
            error: function(pkg, error) {
                $("#error").show();
@@ -57,36 +92,71 @@
       });
   }
 
-  function makeCode () {
-      var pkgIds = $("#pkgId");
+  function checkFields() {
+      fieldIds = [
+          "#pkgReceiverName",
+          "#pkgReceiverSurname",
+          "#pkgReceiverEmail",
+          "#pkgReceiverPhoneNumber",
+          "#pkgDestAddress",
+          "#pkgDestCity",
+          "#pkgDestZipCode",
+          "#pkgSenderName",
+          "#pkgSenderSurname",
+          "#pkgSenderEmail",
+          "#pkgSenderPhoneNumber",
+          "#pkgWeight"
+      ];
+      var success = true
+      var first = true;
+
+      for(var i = 0; i <fieldIds.length; i++) {
+        var field = $(fieldIds[i]);
+        $(field).parent().removeClass("has-error has-success");
+        if(!$(field).val()) {
+            if(first) {
+                $(field).focus();
+                first = false;
+            }
+            console.log(fieldIds[i]+"has_error");
+            $(field).parent().addClass("has-error");
+            success = false;
+        }
+        else {
+            $(field).parent().addClass("has-success");
+        }
+      }
+      return success;
+  }
+
+  function makeCode (pkgCode, pkgDestAddress, pkgDestCity, pkgDestZipCode, pkgReceiverName, pkgReceiverSurname, pkgReceiverPhoneNumber) {
       var codesDiv = $("#qrCodes");
 
-      if (!pkgIds.val()) {
-          alert("Add packages to db");
-          return;
+      console.log("generating QR code for" + pkgCode);
+
+      var qrPlaceholder = document.createElement("div");
+      qrPlaceholder.id = pkgCode;
+      qrPlaceholder.className = "qrCode"; //add class (margin, display inline-block
+      $(codesDiv).append(qrPlaceholder); //add div which will hold newly created qrCode img
+
+      var qrcode = new QRCode(qrPlaceholder, {
+          width : 100,
+          height : 100,
+          colorDark : "#000000",
+          colorLight : "#ffffff",
+          correctLevel : QRCode.CorrectLevel.H
+      });
+
+      qrcode.makeCode(pkgCode);
+
+      var pkgInfoArr = [pkgCode, pkgDestAddress, pkgDestCity, pkgDestZipCode, pkgReceiverName, pkgReceiverSurname, pkgReceiverPhoneNumber];
+      for(i in pkgInfoArr) {
+        console.log(pkgInfoArr[i]);
+        pkgInfo = document.createElement("div");
+        pkgInfo.className = "pkgInfo";
+        $(pkgInfo).text(pkgInfoArr[i]);
+        $(qrPlaceholder).append(pkgInfo);
       }
-
-      var vals = pkgIds.val().trim().split("\n");
-      for( i in vals ) {
-        codeVal = vals[i];
-        console.log("generating QR code for" + codeVal);
-
-        var qrPlaceholder = document.createElement("div");
-        qrPlaceholder.id = codeVal;
-        qrPlaceholder.className = "qrCode"; //add class (margin, display inline-block
-        $(codesDiv).append(qrPlaceholder); //add div which will hold newly created qrCode img
-
-        var qrcode = new QRCode(qrPlaceholder, {
-            width : 100,
-            height : 100,
-            colorDark : "#000000",
-            colorLight : "#ffffff",
-            correctLevel : QRCode.CorrectLevel.H
-        });
-
-        qrcode.makeCode(codeVal);
-      }
-      $(pkgIds).empty();
   }
 
   function exportImg() {
@@ -112,20 +182,44 @@
     <p>Here you can add packages to the database and generate QR codes for them.</p>
 
     <div>
-      <input class="form-control" placeholder="Destination address" id="pkgDestAddress"></input>
-      <input class="form-control" placeholder="Destination city" id="pkgDestCity"></input>
-      <input class="form-control" placeholder="Zip code" id="pkgDestZipCode"></input>
+      <div class="row">
+        <span class="col-md-6"><input class="form-control" placeholder="Receiver name" id="pkgReceiverName"></input></span>
+        <span class="col-md-6"><input class="form-control" placeholder="Receiver surname" id="pkgReceiverSurname"></input></span>
+      </div>
+      <div class="row">
+        <span class="col-md-6"><input class="form-control" placeholder="Receiver e-mail" id="pkgReceiverEmail"></input></span>
+        <span class="col-md-6"><input class="form-control" placeholder="Receiver phone number" id="pkgReceiverPhoneNumber"></input></span>
+      </div>
+
+      <div class="row">
+          <span class="col-md-12"><input class="form-control" placeholder="Destination address" id="pkgDestAddress"></input></span>
+      </div>
+      <div class="row">
+          <span class="col-md-6"><input class="form-control" placeholder="Destination city" id="pkgDestCity"></input></span>
+          <span class="col-md-6"><input class="form-control" placeholder="Zip code" id="pkgDestZipCode"></input></span>
+      </div>
       <br />
-      <input class="form-control" placeholder="Sender e-mail" id="pkgSenderEmail"></input>
-      <input class="form-control" placeholder="Sender name" id="pkgSenderName"></input>
-      <input class="form-control" placeholder="Sender surname" id="pkgSenderSurname"></input>
+
+      <div class="row">
+        <span class="col-md-6"><input class="form-control" placeholder="Sender name" id="pkgSenderName"></input></span>
+        <span class="col-md-6"><input class="form-control" placeholder="Sender surname" id="pkgSenderSurname"></input></span>
+      </div>
+      <div class="row">
+          <span class="col-md-6"><input class="form-control" placeholder="Sender e-mail" id="pkgSenderEmail"></input></span>
+          <span class="col-md-6"><input class="form-control" placeholder="Sender phone number" id="pkgSenderPhoneNumber"></input></span>
+      </div>
+
       <br />
-      <input class="form-control" placeholder="Package description" id="pkgDescription"></input>
-      <input class="form-control" placeholder="Package weight in grams" id="pkgWeight"></input>
+
+      <div class="row">
+          <span class="col-md-12"><input class="form-control" placeholder="Package description" id="pkgDescription"></input></span>
+      </div>
+      <div class="row">
+          <span class="col-md-12"><input class="form-control" placeholder="Package weight in grams" id="pkgWeight"></input></span>
+      </div>
     </div>
     <div>
       <button type="button" class="btn btn-default" id="addToDbBtn">Add to database</button>
-      <button type="button" class="btn btn-default" id="generateQrBtn">Generate QR codes</button>
       <button type="button" class="btn btn-default" id="exportImgBtn">Export img</button>
       <button type="button" class="btn btn-default" id="clearCodesBtn">Clear codes</button>
     </div>
@@ -133,7 +227,6 @@
     <div id="success" style="display:none" class="alert alert-success">Success</div>
     <div id="error" style="display:none" class="alert alert-danger">Error</div>
 
-    <textarea id="pkgId" rows="5" cols="50"></textarea>
   </div>
   <div id="qrCodes"></div>
 
